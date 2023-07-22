@@ -53,24 +53,41 @@ export class MetaverseServer {
 
   async configure()
   {
+    Logger.debug("### SERVER CONFIGURATION STARTING ###");
     await initializeConfiguration()
     .catch ( err => {
       Logger.error('main: failed configuration: ' + err);
       return;
     });
-    
-    await initLogging();
     await setupDB().catch( err => {
       Logger.error('main: failure opening database: ' + err);
       return;
     });
+    Logger.debug("# Database connection established...");
     await  initMonitoring();
+    Logger.debug("# Monitoring configured...");
     await  initSessions();
+    Logger.debug("# Sessions API Initialized...");
     await  initTokens();
+    Logger.debug("# Tokens API Initialized...");
     await  initRequests();
+    Logger.debug("# Requests API Initialized...");
     await  initAccounts();
+    Logger.debug("# Accounts API Initialized...");
     await  initDomains();
+    Logger.debug("# Domains API Initialized...");
     await  initPlaces();
+    Logger.debug("# Places API Initialized...");
+    Logger.debug("### SERVER CONFIGURATION COMPLETED ###");
+    Logger.debug("");
+    Logger.debug("\x1b[1m::::I AM IAMUS!::::\x1b[0m");
+    Logger.debug("To administer the server you will need to run the web dashboard:")
+    Logger.debug("https://github.com/overte-org/metaverse-dashboard")
+    Logger.debug("and connect to \x1b[34m" + Config.server["listen-host"] + ":" + Config.server["listen-port"] + "\x1b[0m");
+    Logger.debug("");
+    Logger.debug("Starting Logger...");
+    Logger.debug("\x1b[33mAll log messages from here on will appear in /logs/iamus.log\x1b[0m")
+    await initLogging();
   }
 
   start() {
