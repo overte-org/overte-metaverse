@@ -26,7 +26,6 @@
         "@Base": "dist"
     },
     "scripts": {
-        "run": "node dist/start.js",
         "build": "npm-run-all -s \"clean-dist\" \"create-version\" \"copy-static\" \"build:iamus\"",
         "lint": "eslint src --ext .ts",
         "lint:fix": "npm run lint -- --fix",
