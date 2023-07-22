@@ -32,6 +32,8 @@ import { Logger } from '@Tools/Logging';
 export let BaseClient: MongoClient;
 // The base database for this application (spec'ed in Config.database.db)
 export let Datab: Db;
+// FerretDB Support (Doesn't support collations)
+export let FerretDBMode: Boolean = false;
 
 // Do the setup of the database.
 // Return a Promise for the creation operation that resolved with the MongoClient.
@@ -41,7 +43,6 @@ export let Datab: Db;
 export async function setupDB(): Promise<void> {
     // Connection URL docs: https://docs.mongodb.com/manual/reference/connection-string/
     let connectUrl: string;
-    let ferretDbMode: boolean = false;
     if (IsNotNullOrEmpty(Config.database["db-connection"])) {
         // if user supplied a connection string, just use that
         connectUrl = Config.database["db-connection"];
@@ -51,11 +52,11 @@ export async function setupDB(): Promise<void> {
         const userSpec = `${Config.database["db-user"]}:${Config.database["db-pw"]}`;
         const hostSpec = `${Config.database["db-host"]}:${Config.database["db-port"]}`;
         let optionsSpec = '';
-        // Ferretdb support
+        // Ferretdb support - we need to disable some features like collations for this to work
         if(Config.database["db-authdb"] == 'ferretdb'){
-            ferretDbMode = true;
+            FerretDBMode = true;
             optionsSpec += `ferretdb?authMechanism=PLAIN`;
-            Logger.warn(`USING FERRETDB: This uses plain text, be sure not to send this over a wire.`);
+            Logger.warn(`\x1b[31mUSING FERRETDB: This uses plain text, be sure not to send this over a wire.\x1b[0m`);
         }
         else if (Config.database["db-authdb"] !== 'admin') {
             optionsSpec += `?authSource=${Config.database["db-authdb"]}`;
@@ -73,7 +74,7 @@ export async function setupDB(): Promise<void> {
     // Do any operations to update database formats
     await DoDatabaseFormatChanges();
 
-    await BuildIndexes(ferretDbMode);
+    await BuildIndexes();
 
     return;
 };
@@ -96,9 +97,10 @@ export async function getObject(pCollection: string,
                                 pCollation?: any): Promise<any> {
     if (pCollation) {
         Logger.cdebug('db-query-detail', `Db.getObject: collection=${pCollection}, criteria=${JSON.stringify(pCriteria.criteriaParameters())}`);
-        const cursor = Datab.collection(pCollection)
-                        .find(pCriteria.criteriaParameters())
-                        .collation(pCollation);
+        let cursor = Datab.collection(pCollection)
+                        .find(pCriteria.criteriaParameters());
+        if(!FerretDBMode)
+            cursor = cursor.collation(pCollation);
         if (await cursor.hasNext()) {
             return cursor.next();
         };
@@ -252,7 +254,7 @@ export const noCaseCollation: any = {
     strength: 2
 };
 
-async function BuildIndexes(ferretDbMode: boolean = false) {
+async function BuildIndexes() {
     // FerretDB needs special treatment because it doesn't support collations at time of writing
 
     // Accounts:
@@ -262,10 +264,10 @@ async function BuildIndexes(ferretDbMode: boolean = false) {
     //    'email'
     await Datab.createIndex(accountCollection, { 'id': 1 } );
     await Datab.createIndex(accountCollection, { 'username': 1 },
-                        ferretDbMode? {} : { collation: noCaseCollation } );
+                        FerretDBMode? {} : { collation: noCaseCollation } );
     await Datab.createIndex(accountCollection, { 'locationNodeId': 1 } );
     await Datab.createIndex(accountCollection, { 'email': 1 },
-                        ferretDbMode? {} : { collation: noCaseCollation } );
+                        FerretDBMode? {} : { collation: noCaseCollation } );
     // Domains:
     //    'domainId'
     //    'apiKey'
@@ -278,7 +280,7 @@ async function BuildIndexes(ferretDbMode: boolean = false) {
     //    'name'
     await Datab.createIndex(placeCollection, { 'id': 1 } );
     await Datab.createIndex(placeCollection, { 'name': 1 },
-        ferretDbMode? {} : { collation: { locale: 'en_US', strength: 2 } } );
+        FerretDBMode? {} : { collation: { locale: 'en_US', strength: 2 } } );
 };
 
 // Do any database format changes.
