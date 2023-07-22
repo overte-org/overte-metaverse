@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 import { Config } from '@Base/config';
 
-import { MongoClient, Db, FilterQuery } from 'mongodb';
+import { MongoClient, Db } from 'mongodb';
 
 import deepmerge from 'deepmerge';
 
@@ -41,6 +41,7 @@ export let Datab: Db;
 export async function setupDB(): Promise<void> {
     // Connection URL docs: https://docs.mongodb.com/manual/reference/connection-string/
     let connectUrl: string;
+    let ferretDbMode: boolean = false;
     if (IsNotNullOrEmpty(Config.database["db-connection"])) {
         // if user supplied a connection string, just use that
         connectUrl = Config.database["db-connection"];
@@ -50,7 +51,13 @@ export async function setupDB(): Promise<void> {
         const userSpec = `${Config.database["db-user"]}:${Config.database["db-pw"]}`;
         const hostSpec = `${Config.database["db-host"]}:${Config.database["db-port"]}`;
         let optionsSpec = '';
-        if (Config.database["db-authdb"] !== 'admin') {
+        // Ferretdb support
+        if(Config.database["db-authdb"] == 'ferretdb'){
+            ferretDbMode = true;
+            optionsSpec += `ferretdb?authMechanism=PLAIN`;
+            Logger.warn(`USING FERRETDB: This uses plain text, be sure not to send this over a wire.`);
+        }
+        else if (Config.database["db-authdb"] !== 'admin') {
             optionsSpec += `?authSource=${Config.database["db-authdb"]}`;
         };
         connectUrl = `mongodb://${userSpec}@${hostSpec}/${optionsSpec}`;
@@ -59,16 +66,14 @@ export async function setupDB(): Promise<void> {
 
     // Connect to the client and then get a database handle to the database to use for this app
     // This app returns the base client and keeps it in the exported global variable.
-    BaseClient = await MongoClient.connect(connectUrl, {
-        useUnifiedTopology: true,
-        useNewUrlParser: true
-    });
+
+    BaseClient = await MongoClient.connect(connectUrl);
     Datab = BaseClient.db(Config.database.db);
 
     // Do any operations to update database formats
     await DoDatabaseFormatChanges();
 
-    await BuildIndexes();
+    await BuildIndexes(ferretDbMode);
 
     return;
 };
@@ -146,7 +151,7 @@ export async function updateObjectFields(pCollection: string,
     Logger.cdebug('db-query-detail', `Db.updateObjectFields: collection=${pCollection}, criteria=${JSON.stringify(pCriteria.criteriaParameters())}, op=${JSON.stringify(op)}`);
     return Datab.collection(pCollection)
         .findOneAndUpdate(pCriteria.criteriaParameters(), op, {
-            returnOriginal: false    // return the updated entity
+            returnDocument: 'after'    // return the updated entity
     } );
 };
 
@@ -158,8 +163,8 @@ export async function deleteMany(pCollection: string, pCriteria: CriteriaFilter)
 export async function deleteOne(pCollection: string, pCriteria: CriteriaFilter): Promise<boolean> {
     let ret = false;
     const result = await Datab.collection(pCollection).deleteOne( pCriteria.criteriaParameters() );
-    if ( result.result && result.result.ok) {
-        ret = result.result.ok === 1
+    if ( !result.acknowledged ) {
+        ret = false
     }
     else {
         ret = (result.deletedCount ?? 0) > 0;
@@ -167,11 +172,21 @@ export async function deleteOne(pCollection: string, pCriteria: CriteriaFilter):
     return ret;
 };
 
+
 // Return a count of the documents that match the passed filter
 export async function countObjects(pCollection: string,
-                                  pFilter: CriteriaFilter): Promise<number> {
-    Logger.cdebug('db-query-detail', `Db.countObjects: collection=${pCollection}, criteria=${JSON.stringify(pFilter.criteriaParameters())}`);
-    return Datab.collection(pCollection).countDocuments(pFilter.criteriaParameters() as FilterQuery<any>);
+    pFilter: CriteriaFilter): Promise<number> {
+//Logger.cdebug('db-query-detail', `Db.countObjects: collection=${pCollection}, criteria=${JSON.stringify(pFilter.criteriaParameters())}`);
+
+let thing = new Promise<number>((resolve, reject) => {resolve(0), reject(0)});
+try {
+    let thing = Datab.collection(pCollection).countDocuments(pFilter.criteriaParameters() as Promise<number>);
+}
+catch(err)
+{
+    console.error("We see something: " + err);
+}
+return thing;
 };
 
 // Low level generator to a stream of objects fitting a criteria.
@@ -232,12 +247,14 @@ const accountCollection = 'accounts';
 const placeCollection = 'places';
 const tokenCollection = 'tokens';
 
-export let noCaseCollation: any = {
+export const noCaseCollation: any = {
     locale: 'en_US',
     strength: 2
 };
 
-async function BuildIndexes() {
+async function BuildIndexes(ferretDbMode: boolean = false) {
+    // FerretDB needs special treatment because it doesn't support collations at time of writing
+
     // Accounts:
     //    'accountId'
     //    'username': should be case-less compare. Also update Accounts.getAccountWithUsername()
@@ -245,10 +262,10 @@ async function BuildIndexes() {
     //    'email'
     await Datab.createIndex(accountCollection, { 'id': 1 } );
     await Datab.createIndex(accountCollection, { 'username': 1 },
-                        { collation: noCaseCollation } );
+                        ferretDbMode? {} : { collation: noCaseCollation } );
     await Datab.createIndex(accountCollection, { 'locationNodeId': 1 } );
     await Datab.createIndex(accountCollection, { 'email': 1 },
-                        { collation: noCaseCollation } );
+                        ferretDbMode? {} : { collation: noCaseCollation } );
     // Domains:
     //    'domainId'
     //    'apiKey'
@@ -261,7 +278,7 @@ async function BuildIndexes() {
     //    'name'
     await Datab.createIndex(placeCollection, { 'id': 1 } );
     await Datab.createIndex(placeCollection, { 'name': 1 },
-                    { collation: { locale: 'en_US', strength: 2 } } );
+        ferretDbMode? {} : { collation: { locale: 'en_US', strength: 2 } } );
 };
 
 // Do any database format changes.

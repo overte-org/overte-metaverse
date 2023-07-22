@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import { Logger } from '@Tools/Logging';
 import { PlaceFilterInfo } from './EntityFilters/PlaceFilterInfo';
 import { Accounts } from './Accounts';
 
-export let placeCollection = 'places';
+export const placeCollection = 'places';
 
 // Initialize place management.
 export function initPlaces(): void {

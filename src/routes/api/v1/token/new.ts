@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ const procPostTokenNew: RequestHandler = async (req: Request, resp: Response, ne
         // The user passes the scope but make sure we know it's one we know
         let scope = TokenScope.OWNER;
         if (req.query && req.query.scope && typeof(req.query.scope) === 'string') {
-            scope = req.query.scope as string;
+            scope = req.query.scope ;
         };
         if (TokenScope.KnownScope(scope)) {
             const tokenInfo = await Tokens.createToken(req.vAuthAccount.id, [ scope ]);

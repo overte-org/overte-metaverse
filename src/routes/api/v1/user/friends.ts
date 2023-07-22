@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ const procGetUserFriends: RequestHandler = async (req: Request, resp: Response, 
                 ? []        // if no friends info, return empty list
                 : friends;
         req.vRestResp.Data = {
-            'friends': friends
+            friends
         };
 
         pager.addResponseFields(req);

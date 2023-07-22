@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import { VKeyedCollection, SArray } from '@Tools/vTypes';
 import { Logger } from '@Tools/Logging';
 import { Requests } from './Requests';
 
-export let accountCollection = 'accounts';
+export const accountCollection = 'accounts';
 
 // Initialize account management.
 export function initAccounts(): void {
@@ -82,7 +82,7 @@ export const Accounts = {
     },
     async getAccountWithEmail(email: string): Promise<AccountEntity> {
         return IsNullOrEmpty(email) ? null : getObject(accountCollection,
-                        new GenericFilter({ 'email': email }), noCaseCollation );
+                        new GenericFilter({ email }), noCaseCollation );
     },
     async addAccount(pAccountEntity: AccountEntity) : Promise<AccountEntity> {
         Logger.info(`Accounts: creating account ${pAccountEntity.username}, id=${pAccountEntity.id}`);

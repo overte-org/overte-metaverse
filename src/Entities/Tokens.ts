@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import { SArray, VKeyedCollection } from '@Tools/vTypes';
 import { Clamp, GenUUID, IsNullOrEmpty, IsNotNullOrEmpty } from '@Tools/Misc';
 import { Logger } from '@Tools/Logging';
 
-export let tokenCollection = 'tokens';
+export const tokenCollection = 'tokens';
 
 // Initialize token management.
 // Mostly starts a periodic function that deletes expired tokens.

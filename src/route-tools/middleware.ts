@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ export const setupMetaverseAPI: RequestHandler = async (req: Request, resp: Resp
     // If an authToken is not supplied in the header, it can be supplied in the query
     if (IsNullOrEmpty(authToken)) {
       if (req.query && req.query.access_token && typeof(req.query.access_token) === 'string') {
-        authToken = (req.query.access_token as string);
+        authToken = (req.query.access_token );
       };
     };
     if (IsNotNullOrEmpty(authToken)) {

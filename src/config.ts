@@ -22,7 +22,7 @@ import { Logger } from '@Tools/Logging';
 export let Config = {
     // The metaverse identity
     'metaverse': {
-        'metaverse-name': 'Vircadia noobie',
+        'metaverse-name': 'Overte noobie',
         'metaverse-nick-name': 'Noobie',
         'metaverse-server-url': '',   // if empty, set to self
         'default-ice-server-url': '', // if empty, set to self

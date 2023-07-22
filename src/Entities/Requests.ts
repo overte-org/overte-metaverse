@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import { GenUUID, SimpleObject, IsNotNullOrEmpty, IsNullOrEmpty } from '@Tools/M
 import { VKeyedCollection } from '@Tools/vTypes';
 import { Logger } from '@Tools/Logging';
 
-export let requestCollection = 'requests';
+export const requestCollection = 'requests';
 
 export class RequestType {
     public static HANDSHAKE = 'handshake';      // doing handshake to make a connection
