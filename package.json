@@ -26,15 +26,15 @@
         "@Base": "dist"
     },
     "scripts": {
-        "build": "npm-run-all -s \"clean-dist\" \"create-version\" \"copy-static\" \"build:iamus\"",
+        "install-packages": "npm install",
+        "build": "npm-run-all -s \"clean-dist\" \"copy-static\" \"build:iamus\"",
         "lint": "eslint src --ext .ts",
         "lint:fix": "npm run lint -- --fix",
         "build:iamus": "tsc",
         "prestart": "npm run build",
         "start": "node dist/start.js",
-        "clean-dist": "node build_scripts/cleanDist.js",
-        "create-version": "node build_scripts/createVersion.js",
-        "copy-static": "node build_scripts/copyStatic.js",
+        "clean-dist": "rimraf ./dist",
+        "copy-static": "copyfiles ./src/static/* ./dist/static/",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "engines": {
@@ -72,10 +72,12 @@
         "@types/uuid": "^8.3.0",
         "@typescript-eslint/eslint-plugin": "^6.1.0",
         "@typescript-eslint/parser": "^6.1.0",
+        "copyfiles": "^2.4.1",
         "eslint": "^8.45.0",
         "eslint-config-prettier": "^8.8.0",
         "eslint-plugin-jsdoc": "^46.4.4",
         "eslint-plugin-prefer-arrow": "^1.2.3",
+        "rimraf": "^5.0.1",
         "tslint": "^6.1.3",
         "typescript": "^5.1.6"
     }
