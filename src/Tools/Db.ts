@@ -177,8 +177,8 @@ export async function deleteOne(pCollection: string, pCriteria: CriteriaFilter):
 
 // Return a count of the documents that match the passed filter
 export async function countObjects(pCollection: string,
-    pFilter: CriteriaFilter): Promise<number> {
-    return Datab.collection(pCollection).countDocuments(pFilter.criteriaParameters() as Promise<number>);
+    pFilter: CriteriaFilter) {
+    return await Datab.collection(pCollection).countDocuments(pFilter.criteriaParameters());
 };
 
 // Low level generator to a stream of objects fitting a criteria.

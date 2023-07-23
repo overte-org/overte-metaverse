@@ -61,7 +61,8 @@ export class MetaverseServer {
     });
     await setupDB().catch( err => {
       Logger.error('main: failure opening database: ' + err);
-      return;
+      Logger.error('Server cannot operate without the database. Please ensure it is running and try again.');
+      process.exit(1);
     });
     Logger.debug("# Database connection established...");
     await  initMonitoring();

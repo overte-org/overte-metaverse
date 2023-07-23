@@ -15,6 +15,7 @@ import deepmerge from 'deepmerge';
 import { IsNullOrEmpty, IsNotNullOrEmpty, getMyExternalIPAddress } from '@Tools/Misc';
 import { httpRequest, httpsRequest } from '@Tools/Misc';
 import { Logger } from '@Tools/Logging';
+import 'dotenv/config'
 
 // All the possible configuration parameters.
 // This sets defaults values and is over-written by environment variables and
@@ -164,19 +165,6 @@ export let Config = {
 // Also read the configuration file and overlay the values.
 export async function initializeConfiguration(): Promise<void> {
 
-    // Tweek some of the values based on environment variables
-    const envLogLevel = process.env.IAMUS_LOGLEVEL;
-    if (IsNotNullOrEmpty(envLogLevel)) Config.debug.loglevel = envLogLevel;
-
-    const envHost = process.env.IAMUS_LISTEN_HOST;
-    if (IsNotNullOrEmpty(envHost)) Config.server['listen-host'] = envHost;
-
-    const envPort = process.env.IAMUS_LISTEN_PORT;
-    if (IsNotNullOrEmpty(envPort)) Config.server['listen-port'] = Number(envPort);
-
-    const envConfigFile = process.env.IAMUS_CONFIG_FILE;
-    if (IsNotNullOrEmpty(envConfigFile)) Config.server["user-config-file"] = envConfigFile;
-
     // Read in the configuration file if it exists and overlay the values.
     try {
         const userConfigFile = Config.server["user-config-file"];
@@ -283,7 +271,10 @@ export async function readInJSON(pFilenameOrURL: string): Promise<any> {
                 configBody = fs.readFileSync(pFilenameOrURL, 'utf-8');
             }
             catch (err) {
-                Logger.debug(`readInJSON: failed read of user config file ${pFilenameOrURL}: ${err}`);
+                if(err.code === 'ENOENT')
+                    Logger.debug('No configuration file found. Using environment variables or defaults.');
+                else
+                    Logger.debug(`readInJSON: failed read of user config file ${pFilenameOrURL}: ${err}`);
             };
         };
     };

@@ -136,8 +136,8 @@ export const Domains = {
         return getEntityUpdateForField(DomainFields, pDomain, pField, pExisting);
     },
     // Return the number of domains that match the criteria
-    async domainCount(pCriteria: CriteriaFilter): Promise<number> {
-        return countObjects(domainCollection, pCriteria);
+    async domainCount(pCriteria: CriteriaFilter) {
+        return await countObjects(domainCollection, pCriteria);
     },
     async *enumerateAsync(pPager: CriteriaFilter,
                 pInfoer?: CriteriaFilter, pScoper?: CriteriaFilter): AsyncGenerator<DomainEntity> {

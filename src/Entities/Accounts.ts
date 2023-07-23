@@ -160,8 +160,8 @@ export const Accounts = {
         return { 'valid': false, 'reason': 'Unknown field name' };
     },
     // Return the number of accounts that match the criteria
-    async accountCount(pCriteria: CriteriaFilter): Promise<number> {
-        return countObjects(accountCollection, pCriteria);
+    async accountCount(pCriteria: CriteriaFilter) {
+        return await countObjects(accountCollection, pCriteria);
     },
     createAccount(pUsername: string, pPassword: string, pEmail: string): AccountEntity {
         const newAcct = new AccountEntity();
