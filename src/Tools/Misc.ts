@@ -167,7 +167,7 @@ export async function SendVerificationEmail(pAccount: AccountEntity, pVerifyCode
             .replace('SHORT_METAVERSE_NAME', shortMetaverseName);
 
         Logger.debug(`SendVerificationEmail: SMTPhost=${Config['nodemailer-transport-config'].host}`);
-        const transporter = createTransport(Config['nodemailer-transport-config']);
+        const transporter = createTransport((Config['nodemailer-transport-config'] as any));
         if (transporter) {
             Logger.debug(`SendVerificationEmail: sending email verification for new account ${pAccount.id}/${pAccount.username}`);
             const msg = {

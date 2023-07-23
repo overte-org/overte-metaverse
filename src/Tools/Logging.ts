@@ -67,10 +67,10 @@ export function initLogging() {
         'level': Config.debug.loglevel,
         'filename': Config.debug['log-filename'],
         'dirname': logDir,
-        'maxsize': Config.debug['log-max-size-megabytes']*1000000, // max size in bytes
-        'maxFiles': Config.debug['log-max-files'],  // number of files to keep
-        'tailable': Config.debug["log-tailable"],
-        'zippedArchive': Config.debug["log-compress"] // ZIP the previous files
+        'maxsize': (Config.debug['log-max-size-megabytes'] as number)*1000000, // max size in bytes
+        'maxFiles': (Config.debug['log-max-files'] as number),  // number of files to keep
+        'tailable': (Config.debug["log-tailable"] as boolean),
+        'zippedArchive': (Config.debug["log-compress"] as boolean) // ZIP the previous files
       })
     );
   };

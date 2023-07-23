@@ -125,8 +125,8 @@ export const Tokens = {
     computeDefaultExpiration(pScopes: string[], pBaseDate?: Date): Date {
         return new Date((pBaseDate ? pBaseDate.valueOf() : new Date().valueOf())
             + ( SArray.has(pScopes, TokenScope.DOMAIN)
-                    ? Config.auth["domain-token-expire-hours"] * 1000*60*60
-                    : Config.auth["owner-token-expire-hours"] * 1000*60*60
+                    ? (Config.auth["domain-token-expire-hours"] as number) * 1000*60*60
+                    : (Config.auth["owner-token-expire-hours"] as number) * 1000*60*60
                 )
         );
     },

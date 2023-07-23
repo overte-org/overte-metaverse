@@ -59,7 +59,7 @@ export function initPlaces(): void {
         const inactivePlaceTime = Places.dateWhenNotActive();
         // The date when a Place's "current" update information is considered stale
         const lastGoodUpdateTime = new Date(Date.now()
-                    - (Config['metaverse-server']['place-current-timeout-minutes'] * 60 * 1000));
+                    - ((Config['metaverse-server']['place-current-timeout-minutes'] as number) * 60 * 1000));
         // Logger.debug(`PlaceActivity: inactive=${inactivePlaceTime.toISOString()}, stale=${lastGoodUpdateTime.toISOString()}`);
 
         for await (const aPlace of Places.enumerateAsync(placer)) {
@@ -107,7 +107,7 @@ export function initPlaces(): void {
             await Places.updateEntityFields(aPlace, updates);
         };
         // Logger.debug(`PlaceActivity: numPlaces=${numPlaces}, unhookedPlaces=${numUnhookedPlaces}, inactivePlaces=${numInactivePlaces}`);
-    }, 1000 * Config['metaverse-server']['place-check-last-activity-seconds'] );
+    }, 1000 * (Config['metaverse-server']['place-check-last-activity-seconds'] as number));
 };
 
 export const Places = {
@@ -206,7 +206,7 @@ export const Places = {
     },
 
     dateWhenNotActive() : Date {
-        return new Date(Date.now() - (Config['metaverse-server']['place-inactive-timeout-minutes'] * 60 * 1000));
+        return new Date(Date.now() - ((Config['metaverse-server']['place-inactive-timeout-minutes'] as number) * 60 * 1000));
     },
 
     async getCurrentInfoAPIKey(pPlace: PlaceEntity): Promise<string> {

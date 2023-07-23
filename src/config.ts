@@ -22,82 +22,82 @@ import { Logger } from '@Tools/Logging';
 export let Config = {
     // The metaverse identity
     'metaverse': {
-        'metaverse-name': 'Overte noobie',
-        'metaverse-nick-name': 'Noobie',
-        'metaverse-server-url': '',   // if empty, set to self
-        'default-ice-server-url': '', // if empty, set to self
-        'dashboard-url': 'https://dashboard.vircadia.com'
+        'metaverse-name': process.env.METAVERSE_SERVER_URL ?? 'Overte noobie',
+        'metaverse-nick-name': process.env.METAVERSE_NICK_NAME ??'Noobie',
+        'metaverse-server-url': process.env.METAVERSE_SERVER_URL ?? '',   // if empty, set to self
+        'default-ice-server-url': process.env.DEFAULT_ICE_SERVER_URL ?? '', // if empty, set to self
+        'dashboard-url':  process.env.DASHBOARD_URL ?? 'https://dashboard.vircadia.com'
     },
     // Server network parameters
     'server': {
-        'listen-host': '0.0.0.0',
-        'listen-port': 9400,
-        'key-file': '',           // if supplied, do https
-        'cert-file': '',
-        'max-body-size': 300000,  // maximum body size for input JSON bodies
-        'static-base': '/static', // base of static data URL
-        'user-config-file': './iamus.json', // startup config over-ride
+        'listen-host': process.env.LISTEN_HOST ?? '0.0.0.0',
+        'listen-port': process.env.LISTEN_PORT ?? 9400,
+        'key-file': process.env.KEY_FILE ?? '',           // if supplied, do https
+        'cert-file': process.env.CERT_FILE ?? '',
+        'max-body-size': process.env.MAX_BODY_SIZE ?? 300000,  // maximum body size for input JSON bodies
+        'static-base': process.env.STATIC_BASE ?? '/static', // base of static data URL
+        'user-config-file': process.env.USER_CONFIG_FILE ?? './iamus.json', // startup config over-ride
         'server-version': {       // overlaid with VERSION.json
-            'version-tag': '1.1.1-20200101-abcdefg'
+            'version-tag': process.env.VERSION_TAG ?? '1.1.1-20200101-abcdefg'
         }
     },
     // Authorization token parameters
     'auth': {
-        'domain-token-expire-hours': 24 * 365,  // one year
-        'owner-token-expire-hours': 24 * 7      // one week
+        'domain-token-expire-hours': process.env.DOMAIN_TOKEN_EXPIRE_HOURS ?? 24 * 365,  // one year
+        'owner-token-expire-hours': process.env.OWNER_TOKEN_EXPIRE_HOURS ?? 24 * 7      // one week
     },
     // Control of the metaverse operations
     'metaverse-server': {
-        'http-error-on-failure': true,  // whether to include x-vircadia error header
-        'error-header': 'x-vircadia-error-handle',
+        'http-error-on-failure': process.env.HTTP_ERROR_ON_FAILURE ?? true,  // whether to include x-vircadia error header
+        'error-header': process.env.ERROR_HEADER ?? 'x-vircadia-error-handle',
 
-        'metaverse-info-addition-file': './metaverse_info.json',
-        'max-name-length': 32,      // the max characters a domain, place, account, ... name
+        'metaverse-info-addition-file': process.env.METAVSE_INFO_ADDITION_FILE ?? './metaverse_info.json',
+        'max-name-length': process.env.MAX_NAME_LENGTH ?? 32,      // the max characters a domain, place, account, ... name
 
-        'session-timeout-minutes': 5,
-        'heartbeat-seconds-until-offline': 5 * 60,      // seconds until non-heartbeating user is offline
-        'domain-seconds-until-offline': 10 * 60,        // seconds until non-heartbeating domain is offline
-        'domain-seconds-check-if-online': 2 * 60,       // how often to check if a domain is online
-        'handshake-request-expiration-minutes': 1,      // minutes that a handshake friend request is active
-        'connection-request-expiration-minutes': 60 * 24 * 4, // 4 days
-        'friend-request-expiration-minutes': 60 * 24 * 4,     // 4 days
+        'session-timeout-minutes': process.env.SESSION_TIMEOUT_MINUTES ?? 5,
+        'heartbeat-seconds-until-offline': process.env.HEARTBEAT_SECONDS_UNTIL_ONLINE ?? 5 * 60,      // seconds until non-heartbeating user is offline
+        'domain-seconds-until-offline': process.env.DOMAIN_SECONDS_UNTIL_ONLINE ?? 10 * 60,        // seconds until non-heartbeating domain is offline
+        'domain-seconds-check-if-online': process.env.DOMAIN_CHECK_IF_ONLINE ?? 2 * 60,       // how often to check if a domain is online
+        'handshake-request-expiration-minutes': process.env.HANDSHAKE_REQUEST_EXPIRE_MINUTES ?? 1,      // minutes that a handshake friend request is active
+        'connection-request-expiration-minutes': process.env.CONNECTION_REQUEST_EXPIRE_MINUTES ?? 60 * 24 * 4, // 4 days
+        'friend-request-expiration-minutes': process.env.FRIEND_REQUEST_EXPIRE_MINUTES ?? 60 * 24 * 4,     // 4 days
 
-        'place-current-timeout-minutes': 5,             // minutes until current place info is stale
-        'place-inactive-timeout-minutes': 60,           // minutes until place is considered inactive
-        'place-check-last-activity-seconds': (3*60)-5,  // seconds between checks for Place lastActivity updates
+        'place-current-timeout-minutes': process.env.PLACE_CURRENT_TIMEOUT_MINUTES ?? 5,             // minutes until current place info is stale
+        'place-inactive-timeout-minutes': process.env.PLACE_INACTIVE_TIMEOUT_MINUTES ?? 60,           // minutes until place is considered inactive
+        'place-check-last-activity-seconds': process.env.PLACE_CHECK_LAST_ACTIVE_ ?? (3*60)-5,  // seconds between checks for Place lastActivity updates
 
         // redirection URL used for initial domain token generation,
         //   "METAVERSE_SERVER_URL" is replaced (from Config.metaverse.metaverse-server-url)
         //   "DASHBOARD_URL" is replaced (from Config.metaverse.dashboard-url)
-        'tokengen_url': 'METAVERSE_SERVER_URL/static/DomainTokenLogin.html',
+        'tokengen_url': process.env.TOKENGEN_URL ?? 'METAVERSE_SERVER_URL/static/DomainTokenLogin.html',
         // 'tokengen_url': 'DASHBOARD_URL?metaverse=METAVERSE_SERVER_URL&page=domain',
 
         // When account of this name is created, add 'admin' role to it
         //    Initially as empty so random people cannot create an admin account
         //    The account named here MUST be controlled by the server's admin
-        'base-admin-account': '',
+        'base-admin-account': process.env.BASE_ADMIN_ACCOUNT ?? '',
 
         // If to assume domain network_address if on is not set
-        'fix-domain-network-address': true,
+        'fix-domain-network-address': process.env.FIX_DOMAIN_NETWORK_ADDRESS ?? true,
         // Whether allowing temp domain name creation
-        'allow-temp-domain-creation': false,
+        'allow-temp-domain-creation': process.env.ALLOW_TEMP_DOMAIN_CREATION ?? false,
 
         // Email verification on account creation
-        'enable-account-email-verification': false,
-        'email-verification-timeout-minutes': 1440, // minutes to wait for email verification (1440=one day)
+        'enable-account-email-verification': process.env.ENABLE_ACCOUNT_EMAIL_VERIFICATION ?? false,
+        'email-verification-timeout-minutes': process.env.EMAIL_VERIFICATION_TIMEOUT_MINUTES ?? 1440, // minutes to wait for email verification (1440=one day)
         // default is in 'static' dir. If you put in 'config' dir, use 'config/verificationEmail.html'.
         //   "VERIFICATION_URL" is replaced with the computed URL (build with Config.metaverse-server-url)
         //   "METAVERSE_NAME" is replaced (from Config.metaverse.metaverse-name)
         //   "SHORT_METAVERSE_NAME" is replaced (from Config.metaverse.metaverse-nick-name)
-        'email-verification-email-body': 'dist/static/verificationEmail.html',  // file to send
-        'email-verification-from': '', // who the email is From
+        'email-verification-email-body': process.env.EMAIL_VERIFICATION_EMAIL_VERIFICATION ?? 'dist/static/verificationEmail.html',  // file to send
+        'email-verification-from': process.env.EMAIL_VERIFICATION_EMAIL_FROM ?? '', // who the email is From
         // When user follows the verification URL, they are redirected to one of these two URLs
         //   "METAVERSE_SERVER_URL" is replaced (from Config.metaverse.metaverse-server-url)
         //   "DASHBOARD_URL" is replaced (from Config.metaverse.dashboard-url)
         //   "ACCOUNT_ID" is replaced with the verifying account id
         //   "FAILURE_REASON" is replaced with the reason for verification failure (url encoded)
-        'email-verification-success-redirect': 'METAVERSE_SERVER_URL/static/verificationEmailSuccess.html',
-        'email-verification-failure-redirect': 'METAVERSE_SERVER_URL/static/verificationEmailFailure.html?r=FAILURE_REASON'
+        'email-verification-success-redirect': process.env.EMAIL_VERIFICATION_REDIRECT ?? 'METAVERSE_SERVER_URL/static/verificationEmailSuccess.html',
+        'email-verification-failure-redirect': process.env.EMAIL_VERIFICATION_FAILURE_REDIRECT ?? 'METAVERSE_SERVER_URL/static/verificationEmailFailure.html?r=FAILURE_REASON'
     },
     // SMTP mail parameters for out-bound email
     // This is the structure that is passed to NodeMailer's SMTP transport.
@@ -105,58 +105,58 @@ export let Config = {
     // For SMTP outbound, setup your email account on your service and
     //     update SMTP-HOSTNAME, SMTP-USER, and SMTP-PASSWORD with your info.
     'nodemailer-transport-config': {
-        'host': 'SMTP-HOSTNAME',
-        'port': 465,    // 587 if secure=false
-        'secure': true,
+        'host': process.env.SMTP_HOSTNAME ?? 'SMTP-HOSTNAME',
+        'port': process.env.SMTP_PORT ?? 465,    // 587 if secure=false
+        'secure': process.env.SMTP_SECURE ?? true,
         'auth': {
-            'user': 'SMTP-USER',
-            'pass': 'SMTP-PASSWORD'
+            'user': process.env.SMTP_USER ?? 'SMTP-USER',
+            'pass': process.env.SMTP_PASSWORD ?? 'SMTP-PASSWORD'
         }
     },
     'monitoring': {
-        'enable': true,           // enable value monitoring
-        'history': true           // whether to keep value history
+        'enable': process.env.MONITORING_ENABLE ?? true,           // enable value monitoring
+        'history': process.env.MONITORING_HISTORY ?? true           // whether to keep value history
     },
     // Setup for MongoDB access
     'database': {
-        'db-host': 'localhost',
-        'db-port': 27017,
-        'db': 'tester',
-        'db-user': 'metaverse',
-        'db-pw': 'nooneknowsit',
-        'db-authdb': 'admin',
-        'db-connection': ''   // connection string replaces above if supplied
+        'db-host': process.env.DB_HOST ?? 'localhost',
+        'db-port': process.env.DB_PORT ?? 27017,
+        'db': process.env.DB ?? 'tester',
+        'db-user': process.env.DB_USER ?? 'metaverse',
+        'db-pw': process.env.DB_PW ?? 'nooneknowsit',
+        'db-authdb': process.env.DB_AUTHDB ?? 'admin',
+        'db-connection': process.env.DB_CONNECTION ?? ''   // connection string replaces above if supplied
     },
     // MongoDB account configured for database backup script
     'backup': {
-        "backup-user": "backuper",  // database backup user account (for BackupDb.sh)
-        "backup-pw": "nooneknowsit", // database backup user password (for BackupDb.sh)
-        "backup-dir": "directoryName", // Backup file directory. Optional. Defaults to "./DatabaseBackup"
-        "authenticationDatabase": "databaseName" // auth db for backup user. Optional. Defaults to "admin"
+        "backup-user": process.env.BACKUP_USER ?? "backuper",  // database backup user account (for BackupDb.sh)
+        "backup-pw": process.env.BACKUP_PW ?? "nooneknowsit", // database backup user password (for BackupDb.sh)
+        "backup-dir": process.env.BACKUP_DIR ?? "directoryName", // Backup file directory. Optional. Defaults to "./DatabaseBackup"
+        "authenticationDatabase": process.env.BACKUP_AUTHENTICATION_DATABASE ?? "databaseName" // auth db for backup user. Optional. Defaults to "admin"
     },
     'debug': {
-        'loglevel': 'info',
+        'loglevel': process.env.LOG_LEVEL ?? 'info',
 
         // Winston logging configuration
-        'log-to-files': true,         // if to log to files
-        'log-filename': 'iamus.log',  // filename for log files
-        'log-directory': './logs',    // directory to place logs
-        'log-max-size-megabytes': 100,// max mega-bytes per log file
-        'log-max-files': 10,          // number of log files to create
-        'log-tailable': true,         // if to always output to main named log file
-        'log-compress': false,        // if to compress old log files
+        'log-to-files': process.env.LOG_TO_FILES ?? true,         // if to log to files
+        'log-filename': process.env.LOG_FILENAME ?? 'iamus.log',  // filename for log files
+        'log-directory': process.env.LOG_DIRECTORY ?? './logs',    // directory to place logs
+        'log-max-size-megabytes': process.env.LOG_MAX_SIZE_MEGABYTES ?? 100,// max mega-bytes per log file
+        'log-max-files': process.env.LOG_MAX_FILES ?? 10,          // number of log files to create
+        'log-tailable': process.env.LOG_TAILABLE ?? true,         // if to always output to main named log file
+        'log-compress': process.env.LOG_COMPRESS ?? false,        // if to compress old log files
 
-        'log-to-console': false,      // if to additionally log to the console
+        'log-to-console': process.env.LOG_TO_CONSOLE ?? false,      // if to additionally log to the console
 
-        'devel': false,
+        'devel': process.env.DEVEL ?? false,
 
         // Control of what debug information is logged
-        'request-detail': false,  // output the received request info when received
-        'request-body': false,    // output the received request body when received
-        'metaverseapi-response-detail': false, // output the response sent back from MetaverseAPI requests
-        'query-detail': false,    // outputs details when selecting query parameters
-        'db-query-detail': false, // outputs details about DB queries
-        'field-setting': false    // Details of entity field getting and setting
+        'request-detail': process.env.REQUEST_DETAIL ?? false,  // output the received request info when received
+        'request-body': process.env.REQUEST_BODY ?? false,    // output the received request body when received
+        'metaverseapi-response-detail': process.env.METAVERSEAPI_RESPONSE_DETAIL ?? false, // output the response sent back from MetaverseAPI requests
+        'query-detail': process.env.QUERY_DETAIL ?? false,    // outputs details when selecting query parameters
+        'db-query-detail': process.env.DB_QUERY_DETAIL || false, // outputs details about DB queries
+        'field-setting': process.env.FIELD_SETTING ?? false    // Details of entity field getting and setting
     }
 };
 

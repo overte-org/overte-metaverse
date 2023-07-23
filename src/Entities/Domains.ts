@@ -65,7 +65,7 @@ export function initDomains(): void {
             };
             void Domains.updateEntityFields(aDomain, updates);
         };
-    }, 1000 * Config['metaverse-server']['domain-seconds-check-if-online']);
+    }, 1000 * (Config['metaverse-server']['domain-seconds-check-if-online'] as number));
 };
 
 export const Domains = {
@@ -153,7 +153,7 @@ export const Domains = {
     },
     // Return the Date when an domain is considered inactive
     dateWhenNotActive(): Date {
-        const notActiveTime = new Date(Date.now() - (1000 * Config["metaverse-server"]["domain-seconds-until-offline"] ) );
+        const notActiveTime = new Date(Date.now() - (1000 * (Config["metaverse-server"]["domain-seconds-until-offline"] as number)) );
         return notActiveTime;
     },
     // Return 'true' if the passed string could be a domainId. Used as a precheck before querying the Db.

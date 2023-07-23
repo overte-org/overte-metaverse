@@ -186,7 +186,7 @@ export class MetaverseServer {
       .on('error', (err) => {
         Logger.error('server exception: ' + err.message);
       })
-      .listen(Config.server["listen-port"], Config.server["listen-host"]);
+      .listen((Config.server["listen-port"] as number), (Config.server["listen-host"]));
     
       // Receive termination signals, shutdown server, stop receiving requests cleanly
       // SIGTERM is usually sent by Docker to stop the application. If this doesn't exit,

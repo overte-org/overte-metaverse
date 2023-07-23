@@ -292,7 +292,7 @@ export const Accounts = {
     isOnline(pAcct: AccountEntity): boolean {
         if (pAcct && pAcct.timeOfLastHeartbeat) {
             return (Date.now().valueOf() - pAcct.timeOfLastHeartbeat.valueOf())
-                < (Config["metaverse-server"]["heartbeat-seconds-until-offline"] * 1000);
+                < ((Config["metaverse-server"]["heartbeat-seconds-until-offline"] as number) * 1000);
         };
         return false;
     },
@@ -300,7 +300,7 @@ export const Accounts = {
     dateWhenNotOnline(): Date {
         const whenOffline = new Date(
             Date.now()
-            - (Config["metaverse-server"]["heartbeat-seconds-until-offline"] * 1000)
+            - ((Config["metaverse-server"]["heartbeat-seconds-until-offline"] as number) * 1000)
         );
         return whenOffline;
     },

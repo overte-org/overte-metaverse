@@ -70,7 +70,7 @@ export const DomainFields: { [key: string]: FieldDefn } = {
         validate: async (pField: FieldDefn, pEntity: Entity, pVal: any): Promise<ValidateResponse> => {
             let validity: ValidateResponse;
             if (typeof(pVal) === 'string' && pVal.length > 0) {
-                if (pVal.length <= Config['metaverse-server']['max-name-length']) {
+                if (pVal.length <= (Config['metaverse-server']['max-name-length'] as number)) {
                     if( /^[A-Za-z][A-Za-z0-9+\-_\.]*$/.test(pVal) ) {
                         validity = { valid: true };
                     }
