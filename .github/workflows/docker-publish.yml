@@ -1,5 +1,5 @@
 # Build Docker image of Iamus metaverse-server and publish in
-#     Github Container Registry as "vircadia/Iamus".
+#     Github Container Registry as "overte-org/overte-metaverse".
 
 name: Iamus Docker image
 

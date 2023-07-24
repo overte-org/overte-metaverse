@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ const procGetPlaces: RequestHandler = async (req: Request, resp: Response, next:
     };
 
     req.vRestResp.Data = {
-      'places': places,
+      places,
       // Maturity catagories added so client knows what is defined in the metaverse-server
       'maturity-categories': Maturity.MaturityCategories
     };

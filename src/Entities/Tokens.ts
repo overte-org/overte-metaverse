@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import { SArray, VKeyedCollection } from '@Tools/vTypes';
 import { Clamp, GenUUID, IsNullOrEmpty, IsNotNullOrEmpty } from '@Tools/Misc';
 import { Logger } from '@Tools/Logging';
 
-export let tokenCollection = 'tokens';
+export const tokenCollection = 'tokens';
 
 // Initialize token management.
 // Mostly starts a periodic function that deletes expired tokens.
@@ -125,8 +125,8 @@ export const Tokens = {
     computeDefaultExpiration(pScopes: string[], pBaseDate?: Date): Date {
         return new Date((pBaseDate ? pBaseDate.valueOf() : new Date().valueOf())
             + ( SArray.has(pScopes, TokenScope.DOMAIN)
-                    ? Config.auth["domain-token-expire-hours"] * 1000*60*60
-                    : Config.auth["owner-token-expire-hours"] * 1000*60*60
+                    ? (Config.auth["domain-token-expire-hours"] as number) * 1000*60*60
+                    : (Config.auth["owner-token-expire-hours"] as number) * 1000*60*60
                 )
         );
     },

@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -151,7 +151,7 @@ export function isValidSArray(pValue: any): boolean {
 export function *walkSArraySetter(pValue:any): Generator<string> {
   if (IsNotNullOrEmpty(pValue)) {
     if (typeof(pValue) === 'string') {
-      yield (pValue as string);
+      yield (pValue );
     }
     else {
       if (Array.isArray(pValue)) {

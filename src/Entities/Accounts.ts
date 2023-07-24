@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import { VKeyedCollection, SArray } from '@Tools/vTypes';
 import { Logger } from '@Tools/Logging';
 import { Requests } from './Requests';
 
-export let accountCollection = 'accounts';
+export const accountCollection = 'accounts';
 
 // Initialize account management.
 export function initAccounts(): void {
@@ -82,7 +82,7 @@ export const Accounts = {
     },
     async getAccountWithEmail(email: string): Promise<AccountEntity> {
         return IsNullOrEmpty(email) ? null : getObject(accountCollection,
-                        new GenericFilter({ 'email': email }), noCaseCollation );
+                        new GenericFilter({ email }), noCaseCollation );
     },
     async addAccount(pAccountEntity: AccountEntity) : Promise<AccountEntity> {
         Logger.info(`Accounts: creating account ${pAccountEntity.username}, id=${pAccountEntity.id}`);
@@ -160,8 +160,8 @@ export const Accounts = {
         return { 'valid': false, 'reason': 'Unknown field name' };
     },
     // Return the number of accounts that match the criteria
-    async accountCount(pCriteria: CriteriaFilter): Promise<number> {
-        return countObjects(accountCollection, pCriteria);
+    async accountCount(pCriteria: CriteriaFilter) {
+        return await countObjects(accountCollection, pCriteria);
     },
     createAccount(pUsername: string, pPassword: string, pEmail: string): AccountEntity {
         const newAcct = new AccountEntity();
@@ -292,7 +292,7 @@ export const Accounts = {
     isOnline(pAcct: AccountEntity): boolean {
         if (pAcct && pAcct.timeOfLastHeartbeat) {
             return (Date.now().valueOf() - pAcct.timeOfLastHeartbeat.valueOf())
-                < (Config["metaverse-server"]["heartbeat-seconds-until-offline"] * 1000);
+                < ((Config["metaverse-server"]["heartbeat-seconds-until-offline"] as number) * 1000);
         };
         return false;
     },
@@ -300,7 +300,7 @@ export const Accounts = {
     dateWhenNotOnline(): Date {
         const whenOffline = new Date(
             Date.now()
-            - (Config["metaverse-server"]["heartbeat-seconds-until-offline"] * 1000)
+            - ((Config["metaverse-server"]["heartbeat-seconds-until-offline"] as number) * 1000)
         );
         return whenOffline;
     },

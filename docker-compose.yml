@@ -1,0 +1,37 @@
+version: '3.4'
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ferretdb
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  ferretdb:
+    image: ghcr.io/ferretdb/ferretdb
+    restart: on-failure
+    environment:
+      - FERRETDB_POSTGRESQL_URL=postgres://postgres:5432/ferretdb
+
+  metaverse:
+    image: metaverse
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+      IAMUS_LOGLEVEL : "debug"
+      METAVERSE_NAME: "My Metaverse"
+      METAVERSE_NICK_NAME: "MyVerse"
+      METAVERSE_SERVER_URL: "http://0.0.0.0:9400/"
+      DEFAULT_ICE_SERVER_URL: "ice.overte.org:7337"
+      DB: "myverse"
+      DB_HOST: "ferretdb"
+      DB_USER: "postgres"
+      DB_PW: "postgres"
+      DB_AUTHDB: "ferretdb"
+    ports:
+      - 9400:9400

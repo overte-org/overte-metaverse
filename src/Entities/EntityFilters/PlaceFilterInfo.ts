@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -187,8 +187,8 @@ export class PlaceFilterInfo extends CriteriaFilter {
         this._doingQuery = true;
         const criteria:VKeyedCollection = {};
         if (this._maturity) {
-            /* tslint:disable-next-line */
-            criteria['maturity'] = { '$in': this._maturity };
+            /* eslint-disable-next-line */
+            criteria.maturity = { '$in': this._maturity };
         };
         if (this._checkIfActive) {
             criteria.currentAttendance = { '$gt': 0 };
@@ -197,12 +197,12 @@ export class PlaceFilterInfo extends CriteriaFilter {
             criteria.lastActivity = { '$gte': Places.dateWhenNotActive() };
         };
         if (this._tags) {
-            /* tslint:disable-next-line */
-            criteria['tags'] = { '$in': this._tags };
+            /* eslint-disable-next-line */
+            criteria.tags = { '$in': this._tags };
         };
         if (this._search) {
-            /* tslint:disable-next-line */
-            criteria['name'] = { '$regex': this._search, '$options': 'i' };
+            /* eslint-disable-next-line */
+            criteria.name = { '$regex': this._search, '$options': 'i' };
         };
         return criteria;
     };

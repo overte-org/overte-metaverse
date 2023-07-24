@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -167,7 +167,7 @@ export async function SendVerificationEmail(pAccount: AccountEntity, pVerifyCode
             .replace('SHORT_METAVERSE_NAME', shortMetaverseName);
 
         Logger.debug(`SendVerificationEmail: SMTPhost=${Config['nodemailer-transport-config'].host}`);
-        const transporter = createTransport(Config['nodemailer-transport-config']);
+        const transporter = createTransport((Config['nodemailer-transport-config'] as any));
         if (transporter) {
             Logger.debug(`SendVerificationEmail: sending email verification for new account ${pAccount.id}/${pAccount.username}`);
             const msg = {

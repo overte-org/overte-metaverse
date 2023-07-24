@@ -1,4 +1,4 @@
-//   Copyright 2021 Vircadia Contributors
+//   Copyright 2021 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ const procPlacesUnhooked: RequestHandler = async (req: Request, resp: Response, 
             };
 
             req.vRestResp.Data = {
-                'places': places,
+                places,
                 // Maturity catagories added so client knows what is defined in the metaverse-server
                 'maturity-categories': Maturity.MaturityCategories
             };
@@ -122,7 +122,7 @@ const procPlacesInactive: RequestHandler = async (req: Request, resp: Response, 
             };
 
             req.vRestResp.Data = {
-                'places': places,
+                places,
                 // Maturity catagories added so client knows what is defined in the metaverse-server
                 'maturity-categories': Maturity.MaturityCategories
             };
