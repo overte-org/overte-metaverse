@@ -1,4 +1,4 @@
-//   Copyright 2021 Vircadia Contributors
+//   Copyright 2021 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -136,8 +136,8 @@ export class VisibilityFilter extends CriteriaFilter {
         this._doingQuery = true;
         const criteria: any = {};
         if (! this._asAdmin) {
-            /* tslint:disable-next-line */
-            criteria['$or'] = [ { 'visibility': { '$exists': false }},
+            /* eslint-disable-next-line */
+            criteria.$or = [ { 'visibility': { '$exists': false }},
                                 { 'visibility': Visibility.OPEN },
                             ];
         }

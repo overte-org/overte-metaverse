@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 import { Config } from '@Base/config';
 
-import { MongoClient, Db, FilterQuery } from 'mongodb';
+import { MongoClient, Db } from 'mongodb';
 
 import deepmerge from 'deepmerge';
 
@@ -32,6 +32,8 @@ import { Logger } from '@Tools/Logging';
 export let BaseClient: MongoClient;
 // The base database for this application (spec'ed in Config.database.db)
 export let Datab: Db;
+// FerretDB Support (Doesn't support collations)
+export let FerretDBMode: Boolean = false;
 
 // Do the setup of the database.
 // Return a Promise for the creation operation that resolved with the MongoClient.
@@ -50,7 +52,13 @@ export async function setupDB(): Promise<void> {
         const userSpec = `${Config.database["db-user"]}:${Config.database["db-pw"]}`;
         const hostSpec = `${Config.database["db-host"]}:${Config.database["db-port"]}`;
         let optionsSpec = '';
-        if (Config.database["db-authdb"] !== 'admin') {
+        // Ferretdb support - we need to disable some features like collations for this to work
+        if(Config.database["db-authdb"] == 'ferretdb'){
+            FerretDBMode = true;
+            optionsSpec += `ferretdb?authMechanism=PLAIN`;
+            Logger.warn(`\x1b[31mUSING FERRETDB: This uses plain text, be sure not to send this over a wire.\x1b[0m`);
+        }
+        else if (Config.database["db-authdb"] !== 'admin') {
             optionsSpec += `?authSource=${Config.database["db-authdb"]}`;
         };
         connectUrl = `mongodb://${userSpec}@${hostSpec}/${optionsSpec}`;
@@ -59,10 +67,8 @@ export async function setupDB(): Promise<void> {
 
     // Connect to the client and then get a database handle to the database to use for this app
     // This app returns the base client and keeps it in the exported global variable.
-    BaseClient = await MongoClient.connect(connectUrl, {
-        useUnifiedTopology: true,
-        useNewUrlParser: true
-    });
+
+    BaseClient = await MongoClient.connect(connectUrl);
     Datab = BaseClient.db(Config.database.db);
 
     // Do any operations to update database formats
@@ -91,9 +97,10 @@ export async function getObject(pCollection: string,
                                 pCollation?: any): Promise<any> {
     if (pCollation) {
         Logger.cdebug('db-query-detail', `Db.getObject: collection=${pCollection}, criteria=${JSON.stringify(pCriteria.criteriaParameters())}`);
-        const cursor = Datab.collection(pCollection)
-                        .find(pCriteria.criteriaParameters())
-                        .collation(pCollation);
+        let cursor = Datab.collection(pCollection)
+                        .find(pCriteria.criteriaParameters());
+        if(!FerretDBMode)
+            cursor = cursor.collation(pCollation);
         if (await cursor.hasNext()) {
             return cursor.next();
         };
@@ -146,7 +153,7 @@ export async function updateObjectFields(pCollection: string,
     Logger.cdebug('db-query-detail', `Db.updateObjectFields: collection=${pCollection}, criteria=${JSON.stringify(pCriteria.criteriaParameters())}, op=${JSON.stringify(op)}`);
     return Datab.collection(pCollection)
         .findOneAndUpdate(pCriteria.criteriaParameters(), op, {
-            returnOriginal: false    // return the updated entity
+            returnDocument: 'after'    // return the updated entity
     } );
 };
 
@@ -158,8 +165,8 @@ export async function deleteMany(pCollection: string, pCriteria: CriteriaFilter)
 export async function deleteOne(pCollection: string, pCriteria: CriteriaFilter): Promise<boolean> {
     let ret = false;
     const result = await Datab.collection(pCollection).deleteOne( pCriteria.criteriaParameters() );
-    if ( result.result && result.result.ok) {
-        ret = result.result.ok === 1
+    if ( !result.acknowledged ) {
+        ret = false
     }
     else {
         ret = (result.deletedCount ?? 0) > 0;
@@ -167,11 +174,11 @@ export async function deleteOne(pCollection: string, pCriteria: CriteriaFilter):
     return ret;
 };
 
+
 // Return a count of the documents that match the passed filter
 export async function countObjects(pCollection: string,
-                                  pFilter: CriteriaFilter): Promise<number> {
-    Logger.cdebug('db-query-detail', `Db.countObjects: collection=${pCollection}, criteria=${JSON.stringify(pFilter.criteriaParameters())}`);
-    return Datab.collection(pCollection).countDocuments(pFilter.criteriaParameters() as FilterQuery<any>);
+    pFilter: CriteriaFilter) {
+    return await Datab.collection(pCollection).countDocuments(pFilter.criteriaParameters());
 };
 
 // Low level generator to a stream of objects fitting a criteria.
@@ -232,12 +239,14 @@ const accountCollection = 'accounts';
 const placeCollection = 'places';
 const tokenCollection = 'tokens';
 
-export let noCaseCollation: any = {
+export const noCaseCollation: any = {
     locale: 'en_US',
     strength: 2
 };
 
 async function BuildIndexes() {
+    // FerretDB needs special treatment because it doesn't support collations at time of writing
+
     // Accounts:
     //    'accountId'
     //    'username': should be case-less compare. Also update Accounts.getAccountWithUsername()
@@ -245,10 +254,10 @@ async function BuildIndexes() {
     //    'email'
     await Datab.createIndex(accountCollection, { 'id': 1 } );
     await Datab.createIndex(accountCollection, { 'username': 1 },
-                        { collation: noCaseCollation } );
+                        FerretDBMode? {} : { collation: noCaseCollation } );
     await Datab.createIndex(accountCollection, { 'locationNodeId': 1 } );
     await Datab.createIndex(accountCollection, { 'email': 1 },
-                        { collation: noCaseCollation } );
+                        FerretDBMode? {} : { collation: noCaseCollation } );
     // Domains:
     //    'domainId'
     //    'apiKey'
@@ -261,7 +270,7 @@ async function BuildIndexes() {
     //    'name'
     await Datab.createIndex(placeCollection, { 'id': 1 } );
     await Datab.createIndex(placeCollection, { 'name': 1 },
-                    { collation: { locale: 'en_US', strength: 2 } } );
+        FerretDBMode? {} : { collation: { locale: 'en_US', strength: 2 } } );
 };
 
 // Do any database format changes.

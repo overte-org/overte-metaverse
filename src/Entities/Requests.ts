@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import { GenUUID, SimpleObject, IsNotNullOrEmpty, IsNullOrEmpty } from '@Tools/M
 import { VKeyedCollection } from '@Tools/vTypes';
 import { Logger } from '@Tools/Logging';
 
-export let requestCollection = 'requests';
+export const requestCollection = 'requests';
 
 export class RequestType {
     public static HANDSHAKE = 'handshake';      // doing handshake to make a connection
@@ -103,7 +103,7 @@ export const Requests = {
         newRequest.targetNodeId = pTargetNodeId;
         newRequest.targetAccepted = false;
         // A connection request lasts only for so long
-        const expirationMinutes = Config["metaverse-server"]["handshake-request-expiration-minutes"];
+        const expirationMinutes = (Config["metaverse-server"]["handshake-request-expiration-minutes"] as number);
         newRequest.expirationTime = new Date(Date.now() + 1000 * 60 * expirationMinutes);
 
         return newRequest;
@@ -114,7 +114,7 @@ export const Requests = {
         newRequest.requestType = RequestType.VERIFYEMAIL;
         newRequest.requestingAccountId = pAccountId;
         newRequest.verificationCode = pVerificationCode;
-        const expirationMinutes = Config["metaverse-server"]['email-verification-timeout-minutes'];
+        const expirationMinutes = (Config["metaverse-server"]['email-verification-timeout-minutes'] as number);
         newRequest.expirationTime = new Date(Date.now() + 1000 * 60 * expirationMinutes);
         return newRequest;
     },

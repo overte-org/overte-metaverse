@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import { GenUUID, IsNullOrEmpty, IsNotNullOrEmpty } from '@Tools/Misc';
 import { VKeyedCollection } from '@Tools/vTypes';
 import { Logger } from '@Tools/Logging';
 
-export let domainCollection = 'domains';
+export const domainCollection = 'domains';
 
 // Initialize domain management.
 // Periodic checks on liveness of domains and resetting of values if not talking
@@ -65,7 +65,7 @@ export function initDomains(): void {
             };
             void Domains.updateEntityFields(aDomain, updates);
         };
-    }, 1000 * Config['metaverse-server']['domain-seconds-check-if-online']);
+    }, 1000 * (Config['metaverse-server']['domain-seconds-check-if-online'] as number));
 };
 
 export const Domains = {
@@ -136,8 +136,8 @@ export const Domains = {
         return getEntityUpdateForField(DomainFields, pDomain, pField, pExisting);
     },
     // Return the number of domains that match the criteria
-    async domainCount(pCriteria: CriteriaFilter): Promise<number> {
-        return countObjects(domainCollection, pCriteria);
+    async domainCount(pCriteria: CriteriaFilter) {
+        return await countObjects(domainCollection, pCriteria);
     },
     async *enumerateAsync(pPager: CriteriaFilter,
                 pInfoer?: CriteriaFilter, pScoper?: CriteriaFilter): AsyncGenerator<DomainEntity> {
@@ -153,7 +153,7 @@ export const Domains = {
     },
     // Return the Date when an domain is considered inactive
     dateWhenNotActive(): Date {
-        const notActiveTime = new Date(Date.now() - (1000 * Config["metaverse-server"]["domain-seconds-until-offline"] ) );
+        const notActiveTime = new Date(Date.now() - (1000 * (Config["metaverse-server"]["domain-seconds-until-offline"] as number)) );
         return notActiveTime;
     },
     // Return 'true' if the passed string could be a domainId. Used as a precheck before querying the Db.

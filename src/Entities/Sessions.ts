@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ export function initSessions(): void {
 
     // Expire tokens that have pased their prime
     setInterval( async () => {
-        const timeoutTime = new Date(Date.now() - 1000 * 60 * Config["metaverse-server"]["session-timeout-minutes"]).valueOf();
+        const timeoutTime = new Date(Date.now() - 1000 * 60 * (Config["metaverse-server"]["session-timeout-minutes"] as number)).valueOf();
         const toDelete: SessionEntity[] = [];
         _currentSessions.forEach( sess => {
             if (sess.timeOfLastReference.valueOf() < timeoutTime) {

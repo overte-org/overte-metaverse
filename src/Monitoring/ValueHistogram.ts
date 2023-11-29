@@ -1,4 +1,4 @@
-//   Copyright 2020 Vircadia Contributors
+//   Copyright 2020 Overte Contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -101,7 +101,7 @@ export class ValueHistogram extends Histogram {
             "timeBase": this._timeBase - (this._bucketMilliseconds * (this._numBuckets - this._lastBucket)),
             "baseNumber": Math.floor((this._timeBase / this._bucketMilliseconds)) + this._lastBucket + 1,
             "type": "average",
-            "values": values
+            values
         };
     };
 
